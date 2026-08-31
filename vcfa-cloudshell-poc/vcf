@@ -1,0 +1,36 @@
+#!/bin/bash
+# Mock VCF CLI script for testing the POC
+
+echo "Mock VCF CLI called with args: $@"
+
+# Simulate creating a context
+if [[ "$1" == "context" && "$2" == "create" ]]; then
+    echo "Creating context '$3' for endpoint $5..."
+    mkdir -p ~/.kube
+    # Create a dummy kubeconfig
+    cat <<EOF > ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://$5
+  name: poc-cluster
+contexts:
+- context:
+    cluster: poc-cluster
+    user: poc-user
+  name: $3
+current-context: $3
+kind: Config
+preferences: {}
+users:
+- name: poc-user
+  user:
+    token: ${7:-dummy-token}
+EOF
+    echo "Context $3 created successfully."
+fi
+
+# Simulate using a context
+if [[ "$1" == "context" && "$2" == "use" ]]; then
+    echo "Switched to context '$3'."
+fi
