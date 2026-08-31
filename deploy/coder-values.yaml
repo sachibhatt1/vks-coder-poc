@@ -1,0 +1,13 @@
+coder:
+  # The CODER_ACCESS_URL is the primary URL used to access the Coder deployment.
+  # For a POC with LoadBalancer, you can initially leave this empty or dynamically set it.
+  # Once you have the LoadBalancer IP, you should update this value to `http://<YOUR_LB_IP>`.
+  env:
+    - name: CODER_ACCESS_URL
+      value: ""
+
+  # Configure the Kubernetes Service to expose Coder via a LoadBalancer.
+  # This makes the UI accessible externally.
+  service:
+    type: LoadBalancer
+    enable: true

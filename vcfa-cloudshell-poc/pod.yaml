@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: vcfa-cloudshell-user1
+  name: vcfa-cloudshell-${USER_ID}
   namespace: my-vcfa-project-namespace
   labels:
-    app: vcfa-cloudshell
+    app: vcfa-cloudshell-${USER_ID}
 spec:
   containers:
   - name: cloudshell
@@ -15,33 +15,33 @@ spec:
     - containerPort: 8080
     env:
     - name: VCFA_FQDN
-      value: "vcfa.corp.local"
+      value: "${VCFA_FQDN}"
     - name: VCFA_TENANT
-      value: "developer-org"
+      value: "${VCFA_TENANT}"
     - name: VCFA_API_TOKEN
       valueFrom:
         secretKeyRef:
-          name: user-vcfa-token-secret
+          name: ${USER_ID}-vcfa-token-secret
           key: token
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: user-vcfa-token-secret
+  name: ${USER_ID}-vcfa-token-secret
   namespace: my-vcfa-project-namespace
 type: Opaque
 stringData:
   # In a real workflow, this token is dynamically generated and injected here
-  token: "vcf-temp-api-token-xyz123"
+  token: "${VCFA_API_TOKEN}"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vcfa-cloudshell-service
+  name: vcfa-cloudshell-${USER_ID}-service
   namespace: my-vcfa-project-namespace
 spec:
   selector:
-    app: vcfa-cloudshell
+    app: vcfa-cloudshell-${USER_ID}
   ports:
     - protocol: TCP
       port: 80

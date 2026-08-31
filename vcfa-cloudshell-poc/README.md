@@ -37,16 +37,20 @@ You can test the container image and `ttyd` locally before deploying to a cluste
    Push the `vcfa-cloudshell:latest` image to a registry accessible by your Supervisor cluster (e.g., Harbor). Update the `image` field in `pod.yaml` accordingly.
 
 2. **Deploy the resources**:
-   Ensure you have a namespace `my-vcfa-project-namespace` created.
+   Ensure you have a namespace `my-vcfa-project-namespace` created. Since `pod.yaml` now uses template variables (`${USER_ID}`, `${VCFA_FQDN}`, `${VCFA_TENANT}`, `${VCFA_API_TOKEN}`) to support dynamic provisioning and multiple concurrent users, you can deploy it using `envsubst`:
    ```bash
    kubectl create namespace my-vcfa-project-namespace
-   kubectl apply -f pod.yaml
+   export USER_ID="jdoe"
+   export VCFA_FQDN="vcfa.corp.local"
+   export VCFA_TENANT="developer-org"
+   export VCFA_API_TOKEN="mock-token-123"
+   envsubst < pod.yaml | kubectl apply -f -
    ```
 
 3. **Access the shell**:
-   Get the external IP of the load balancer service:
+   Get the external IP of the load balancer service for your specific user:
    ```bash
-   kubectl get svc vcfa-cloudshell-service -n my-vcfa-project-namespace
+   kubectl get svc vcfa-cloudshell-jdoe-service -n my-vcfa-project-namespace
    ```
    Open `http://<EXTERNAL_IP>` in your browser.
 
